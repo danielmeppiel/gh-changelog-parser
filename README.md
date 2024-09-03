@@ -6,6 +6,7 @@
   - [How to Use](#how-to-use)
     - [Prerequisites](#prerequisites)
     - [Running the Script](#running-the-script)
+      - [HTML (`changelog.html`)](#html-changeloghtml)
   - [AI-powered Categorization](#ai-powered-categorization)
     - [Running with AI Categorization](#running-with-ai-categorization)
 
@@ -25,7 +26,12 @@ This script is designed to fetch and parse the [GitHub Changelog](https://github
 
 ### Prerequisites
 
-   Ensure you have the required libraries installed:
+   To install `pipenv`, a Python package manager, follow these steps on macOS:
+   ```sh
+   brew install pipenv
+   ```
+
+   Then, ensure you have the required libraries installed:
    ```sh
    pipenv install
    ```
