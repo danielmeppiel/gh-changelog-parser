@@ -78,7 +78,7 @@ This script is designed to fetch and parse the [GitHub Changelog](https://github
 ## AI-powered Categorization
 You can use AI to automatically categorize the changelog items per product area (DevEx, Security, AI).
 
-### Prerequisites
+### Prerequisites
 
 **Create a [`.env`](https://github.com/danielmeppiel/gh-changelog-parser/.env) File**:
    Create a [`.env`](https://github.com/danielmeppiel/gh-changelog-parser/.env) file within the repository and add a line with your GitHub token. This token should be created in GitHub with no scopes and no permissions.
