@@ -1,9 +1,6 @@
 # GitHub Changelog Parser
 
-## Table of Contents
-
 - [GitHub Changelog Parser](#github-changelog-parser)
-  - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Why It Is Useful](#why-it-is-useful)
   - [How to Use](#how-to-use)
@@ -16,7 +13,7 @@
 
 ## Overview
 
-This script is designed to fetch and parse the GitHub changelog from the [GitHub Changelog](https://github.blog/changelog/) website. It extracts relevant information such as the title, link, published date, and summary of each changelog entry and saves this information in both Markdown and HTML formats. The script allows users to specify the number of days to look back from today to filter the changelog entries.
+This script is designed to fetch and parse the [GitHub Changelog](https://github.blog/changelog/) website. It extracts relevant information such as the title, link, published date, and summary of each changelog entry and saves this information in both Markdown and HTML formats. The script allows users to specify the number of days to look back from today to filter the changelog entries. It also allows you to use AI to automatically categorize the changelog items per product area (DevEx, Security, AI).
 
 ## Why It Is Useful
 
