@@ -18,6 +18,9 @@ class Article:
 
     def to_markdown(self):
         return f"({self.published}) [{self.title}]({self.link})"
+    
+    def to_html(self):
+        return f'({self.published}) <a href="{self.link}">{self.title}</a>'
 
     def __str__(self):
         return (f"Title: {self.title}\n"
@@ -92,4 +95,4 @@ if __name__ == "__main__":
 
     with open(output_html_file, 'w') as file:
         for article in articles:
-            file.write(f'<p>- ({article.published}) <a href="{article.link}">{article.title}</a></p>\n')
+            file.write(f'<p>- {article.to_html()}</p>\n')
