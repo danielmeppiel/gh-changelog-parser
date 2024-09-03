@@ -29,6 +29,13 @@ class Article:
                 f"Summary: {self.summary}\n"
                 + "-" * 40)
 
+def parse_entry(entry):
+    title = entry.find('a', class_='Link--primary').text.strip()
+    link = entry.find('a', class_='Link--primary')['href']
+    published = entry.find('time')['datetime']
+    summary = entry.find('div', class_='changelog-single-content').text.strip()
+    return Article(title, link, published, summary)
+
 def fetch_and_parse_changelog(url, stop_date):
     page = 1
     stop_date = datetime.strptime(stop_date, '%Y-%m-%d')
@@ -37,11 +44,9 @@ def fetch_and_parse_changelog(url, stop_date):
     while True:
         # Construct the URL for the current page
         page_url = f"{url}page/{page}/"
-        
         # Fetch the webpage content
         response = requests.get(page_url)
         response.raise_for_status()  # Raise an exception for HTTP errors
-
         # Parse the HTML content
         soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -51,16 +56,10 @@ def fetch_and_parse_changelog(url, stop_date):
             break
 
         for entry in entries:
-            title = entry.find('a', class_='Link--primary').text.strip()
-            link = entry.find('a', class_='Link--primary')['href']
-            published = entry.find('time')['datetime']
-            published_date = datetime.strptime(published, '%Y-%m-%d')
-            summary = entry.find('div', class_='changelog-single-content').text.strip()
-
+            article = parse_entry(entry)
+            published_date = datetime.strptime(article.published, '%Y-%m-%d')
             if published_date < stop_date:
                 return articles
-
-            article = Article(title, link, published, summary)
             articles.append(article)
 
         page += 1
