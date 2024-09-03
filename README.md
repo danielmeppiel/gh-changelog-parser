@@ -1,14 +1,13 @@
 # GitHub Changelog Parser
 
-- [GitHub Changelog Parser](#github-changelog-parser)
-  - [Overview](#overview)
-  - [Why It Is Useful](#why-it-is-useful)
-  - [How to Use](#how-to-use)
-    - [Prerequisites](#prerequisites)
-    - [Running the Script](#running-the-script)
-      - [HTML (`changelog.html`)](#html-changeloghtml)
-  - [AI-powered Categorization](#ai-powered-categorization)
-    - [Running with AI Categorization](#running-with-ai-categorization)
+- [Overview](#overview)
+- [Why It Is Useful](#why-it-is-useful)
+- [How to Use](#how-to-use)
+  - [Prerequisites](#prerequisites)
+  - [Running the Script](#running-the-script)
+    - [HTML (`changelog.html`)](#html-changeloghtml)
+- [AI-powered Categorization](#ai-powered-categorization)
+  - [Running with AI Categorization](#running-with-ai-categorization)
 
 
 ## Overview
