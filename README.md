@@ -6,7 +6,6 @@
   - [How to Use](#how-to-use)
     - [Prerequisites](#prerequisites)
     - [Running the Script](#running-the-script)
-      - [HTML (`changelog.html`)](#html-changeloghtml)
   - [AI-powered Categorization](#ai-powered-categorization)
     - [Running with AI Categorization](#running-with-ai-categorization)
 
