@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 from datetime import datetime, timedelta
+from categorizer import categorize_changelog
 
 land = "DevEx"
 secure = "Security"
@@ -15,6 +16,7 @@ class Article:
         self.link = link
         self.published = published
         self.summary = summary
+        self.category = None
 
     def to_markdown(self):
         return f"({self.published}) [{self.title}]({self.link})"
@@ -74,10 +76,44 @@ def parse_categories(html_content):
     else:
         print("No categories found.")
 
+def write_articles_to_markdown(articles, do_categorize, output_file):
+    markdown_content = ""
+    for article in articles:
+        markdown_content += f"- {article.to_markdown()}\n"
+    if do_categorize:
+        # Call the categorizer to categorize the changelog
+        markdown_content = categorize_changelog(markdown_content, "markdown")
+        # Strip the first and last lines to remove the raw markdown formatting
+        markdown_lines = markdown_content.splitlines()[1:-1]
+        markdown_content = "\n".join(markdown_lines) + "\n"
+    # Write the markdown content to the file
+    with open(output_file, 'w') as file:
+        file.write(markdown_content)
+
+def write_articles_to_html(articles, do_categorize, output_file):
+    html_content = ""
+    for article in articles:
+        html_content += f'<p>- {article.to_html()}</p>\n'
+    if do_categorize:
+        # Call the categorizer to categorize the changelog
+        html_content = categorize_changelog(html_content, "html")
+        # Strip the first and last lines to remove the raw html formatting
+        html_lines = html_content.splitlines()[1:-1]
+        # Wrap the content with <html> tags
+        html_content = "\n".join(html_lines) + "\n"
+    html_content = "<html>\n" + html_content + "</html>"
+    # Write the html content to the file
+    with open(output_file, 'w') as file:
+        file.write(html_content)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch and parse GitHub changelog.")
     parser.add_argument('--days', type=int, default=90, help='Number of days to look back from today (default: 90)')
+    parser.add_argument('--format', type=str, default='md', help='Output format (md or html)')
+    parser.add_argument('-c', action='store_true', help='Use AI to categorize the changelog items per product area (DevEx, Security, AI)')
     args = parser.parse_args()
+    do_categorize = args.c
 
     changelog_url = "https://github.blog/changelog/"
     # Obtain the stop date as the specified number of days older than today
@@ -85,13 +121,11 @@ if __name__ == "__main__":
     articles = fetch_and_parse_changelog(changelog_url, stop_date)
     
     current_path = os.path.dirname(os.path.abspath(__file__))
-    output_md_file = os.path.join(current_path, "changelog.md")
-    output_html_file = os.path.join(current_path, "changelog.html")
+    output_file = os.path.join(current_path, "changelog." + args.format)
 
-    with open(output_md_file, 'w') as file:
-        for article in articles:
-            file.write(f"- {article.to_markdown()}\n")
-
-    with open(output_html_file, 'w') as file:
-        for article in articles:
-            file.write(f'<p>- {article.to_html()}</p>\n')
+    if args.format == 'md':
+        write_articles_to_markdown(articles, do_categorize, output_file)
+    elif args.format == 'html':
+        write_articles_to_html(articles, do_categorize, output_file)
+    else:
+        print("Invalid format specified.")

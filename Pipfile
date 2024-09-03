@@ -8,6 +8,8 @@ requests = "*"
 feedparser = "*"
 beautifulsoup4 = "*"
 argparse = "*"
+azure-ai-inference = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
