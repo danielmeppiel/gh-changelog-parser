@@ -1,3 +1,4 @@
+import os
 import re
 import requests
 from io import BytesIO
@@ -6,6 +7,21 @@ from ai_tools import summarize_text
 from bs4 import BeautifulSoup
 from pptx import Presentation
 
+MAX_ARTICLE_TITLE_WORDS = os.environ.get('MAX_ARTICLE_TITLE_WORDS', 10)
+MAX_ARTICLE_CONTENT_CHARS = os.environ.get('MAX_ARTICLE_CONTENT_CHARS', 215)
+
+TITLE_TMPL_SLIDE_IDX = os.environ.get('TITLE_TMPL_SLIDE_IDX', 0)
+AGENDA_TMPL_SLIDE_IDX = os.environ.get('AGENDA_TMPL_SLIDE_IDX', 1)
+THX_TMPL_SLIDE_IDX = os.environ.get('AGENDA_TMPL_SLIDE_IDX', 9)
+
+ARTICLE_W_IMAGE_SLIDE_IDX = os.environ.get('ARTICLE_W_IMAGE_SLIDE_IDX', 5)
+ARTICLE_WO_IMAGE_SLIDE_IDX = os.environ.get('ARTICLE_WO_IMAGE_SLIDE_IDX', 3)
+
+DEVEX_SLIDE_MASTER_IDX = os.environ.get('DEVEX_SLIDE_MASTER_IDX', 0)
+SECURITY_SLIDE_MASTER_IDX = os.environ.get('SECURITY_SLIDE_MASTER_IDX', 2)
+AI_SLIDE_MASTER_IDX = os.environ.get('AI_SLIDE_MASTER_IDX', 1)
+
+CATEGORY_SLIDE_TMPL_IDX = os.environ.get('CATEGORY_SLIDE_TMPL_IDX', 2)
 
 def parse_changelog(file_path):
     articles = []
@@ -39,34 +55,28 @@ def fetch_article_content(article):
         article.imgs.append(img)
     return article
 
-def choose_article_layout(article, prs):
-    slide_master = None
-    if article.category == "DevEx":
-        slide_master = prs.slide_masters[0]
-    elif article.category == "Security":
-        slide_master = prs.slide_masters[2]
-    elif article.category == "AI":
-        slide_master = prs.slide_masters[1]
+def get_category_master_slide(prs, category):
+    if category == "DevEx":
+        return prs.slide_masters[DEVEX_SLIDE_MASTER_IDX]
+    elif category == "Security":
+        return prs.slide_masters[SECURITY_SLIDE_MASTER_IDX]
+    elif category == "AI":
+        return prs.slide_masters[AI_SLIDE_MASTER_IDX]
     else:
-        slide_master = prs.slide_masters[0]
-    
-    return slide_master.slide_layouts[5] if article.imgs else slide_master.slide_layouts[3]
+        return prs.slide_masters[DEVEX_SLIDE_MASTER_IDX]
+
+def choose_article_layout(article, prs):
+    slide_master = get_category_master_slide(prs, article.category)
+    slide_idx = ARTICLE_W_IMAGE_SLIDE_IDX if article.imgs else ARTICLE_WO_IMAGE_SLIDE_IDX
+    return slide_master.slide_layouts[slide_idx]
 
 def choose_category_layout(prs, category):
-    slide_master = None
-    if category == "DevEx":
-        slide_master = prs.slide_masters[0]
-    elif category == "Security":
-        slide_master = prs.slide_masters[2]
-    elif category == "AI":
-        slide_master = prs.slide_masters[1]
-    else:
-        slide_master = prs.slide_masters[0]
-    return slide_master.slide_layouts[2]
+    slide_master = get_category_master_slide(prs, category)
+    return slide_master.slide_layouts[CATEGORY_SLIDE_TMPL_IDX]
 
 def add_agenda_slide(prs):
     print("Adding agenda slide...")
-    slide_layout = prs.slide_layouts[1]
+    slide_layout = prs.slide_layouts[AGENDA_TMPL_SLIDE_IDX]
     agenda_slide = prs.slides.add_slide(slide_layout)
     # Take the first placeholder of the agenda slide and add lines "01" "02" and "03"
     agenda_slide.placeholders[11].text = "01\n02\n03"
@@ -92,16 +102,16 @@ def add_article_slide(prs, article):
     content_placeholder = slide.placeholders[26]
 
     title_run = title_placeholder.text_frame.paragraphs[0].add_run()
-    if len(article.title.split()) > 10:
+    if len(article.title.split()) > MAX_ARTICLE_TITLE_WORDS:
         print("Summarizing title...")
-        title_run.text = summarize_text(article.title, 10, "words")
+        title_run.text = summarize_text(article.title, MAX_ARTICLE_TITLE_WORDS, "words")
     else:
         title_run.text = article.title
     title_run.hyperlink.address = article.link
     date_placeholder.text = article.published
 
     print("Summarizing content...")
-    content_placeholder.text = summarize_text(article.summary, 215)
+    content_placeholder.text = summarize_text(article.summary, MAX_ARTICLE_CONTENT_CHARS)
 
     if article.imgs:
         img = article.imgs[0]
@@ -116,13 +126,13 @@ def fetch_and_insert_image(slide, img_url):
 
 def update_title_slide(prs):
     print("Updating title slide...")
-    title_slide = prs.slides[0]
+    title_slide = prs.slides[TITLE_TMPL_SLIDE_IDX]
     title_placeholder = title_slide.placeholders[0]
     title_placeholder.text = "Product Roadmap"
 
 def add_thank_you_slide(prs):
     print("Adding thank you slide...")
-    slide_layout = prs.slide_layouts[9]
+    slide_layout = prs.slide_layouts[THX_TMPL_SLIDE_IDX]
     prs.slides.add_slide(slide_layout)
 
 def create_presentation(changelog_items, template_file, output_file):
