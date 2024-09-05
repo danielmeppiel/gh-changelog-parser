@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "54b71122656838b4a91df4a91001a5c49317e53cfee97af68dcbb1bea8e47a44"
+            "sha256": "00c1e1f8fe47920e7a7c6f9aed07c08b3c75fbce62bdd9a88d207c8cccbe2fac"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -24,23 +24,6 @@
             ],
             "index": "pypi",
             "version": "==1.4.0"
-        },
-        "azure-ai-inference": {
-            "hashes": [
-                "sha256:5464404bef337338d4af6eefde3af903400ddb8e5c9e6820f902303542fa0f72",
-                "sha256:e2c949f91845a8cd96cb9a61ffd432b5b0f4ce236b9be8c29d10f38e0a327412"
-            ],
-            "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "==1.0.0b4"
-        },
-        "azure-core": {
-            "hashes": [
-                "sha256:a14dc210efcd608821aa472d9fb8e8d035d29b68993819147bc290a8ac224472",
-                "sha256:cf019c1ca832e96274ae85abd3d9f752397194d9fea3b41487290562ac8abe4a"
-            ],
-            "markers": "python_version >= '3.8'",
-            "version": "==1.30.2"
         },
         "beautifulsoup4": {
             "hashes": [
@@ -171,13 +154,6 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.8"
-        },
-        "isodate": {
-            "hashes": [
-                "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96",
-                "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9"
-            ],
-            "version": "==0.6.1"
         },
         "lxml": {
             "hashes": [
@@ -442,14 +418,6 @@
                 "sha256:7868fb1c8bfa764c1ac563d3cf369c381d1325d36124933a726f29fcdaa812e9"
             ],
             "version": "==1.0.0"
-        },
-        "six": {
-            "hashes": [
-                "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
-                "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
-            ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==1.16.0"
         },
         "soupsieve": {
             "hashes": [

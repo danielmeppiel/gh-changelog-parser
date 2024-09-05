@@ -1,21 +1,18 @@
 import os
-import time
-from azure.core.exceptions import HttpResponseError
-from azure.ai.inference import ChatCompletionsClient
-from azure.ai.inference.models import SystemMessage
-from azure.ai.inference.models import UserMessage
-from azure.core.credentials import AzureKeyCredential
+import requests
 
 # Load environment variables from a .env file
 from dotenv import load_dotenv
 load_dotenv()
 
-# To authenticate with the model you will need to generate a personal access token (PAT) in your GitHub settings. 
-# Create your PAT token by following instructions here: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-client = ChatCompletionsClient(
-    endpoint="https://models.inference.ai.azure.com",
-    credential=AzureKeyCredential(os.environ["GITHUB_TOKEN"]),
-)
+# Configuration
+AZURE_GPT4O_ENDPOINT = os.environ["AZURE_GPT4O_ENDPOINT"]
+AZURE_GPT4OMINI_ENDPOINT = os.environ["AZURE_GPT4OMINI_ENDPOINT"]
+API_KEY = os.environ["AZURE_API_KEY"]
+headers = {
+    "Content-Type": "application/json",
+    "api-key": API_KEY,
+}
 
 def categorize_changelog(changelog, format="markdown"):
     system_message = '''Taking the following categories and subcategories:
@@ -28,18 +25,41 @@ def categorize_changelog(changelog, format="markdown"):
     if format == "html":
         system_message += 'Ensure each Category title is rendered as an HTML header.'
     
-    response = client.complete(
-        messages=[
-            SystemMessage(content=system_message),
-            UserMessage(content=changelog),
+    # Payload for the request
+    payload = {
+        "messages": [
+            {
+            "role": "system",
+            "content": [
+                {
+                "type": "text",
+                "text": system_message
+                }
+            ]
+            },
+            {
+            "role": "user",
+            "content": [
+                {
+                "type": "text",
+                "text": changelog
+                }
+            ]
+            }
         ],
-        model="gpt-4o",
-        temperature=1,
-        max_tokens=4096,
-        top_p=1
-    )
+        "temperature": 1,
+        "top_p": 1,
+        "max_tokens": 4096
+    }
+    
+    # Send request
+    try:
+        response = requests.post(AZURE_GPT4O_ENDPOINT, headers=headers, json=payload)
+        response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
+    except requests.RequestException as e:
+        raise SystemExit(f"Failed to make the request. Error: {e}")
 
-    return response.choices[0].message.content
+    return response.json()['choices'][0]['message']['content']
 
 def summarize_text(text, limit, limit_type="characters"):
     system_message = f'''Summarize any text I give you to {limit} {limit_type}. 
@@ -48,32 +68,38 @@ def summarize_text(text, limit, limit_type="characters"):
     remove information that you consider less important or use widely understood acronyms.
     Generally, a shorter summary is better than a more concise one.'''
 
-    try:
-        response = client.complete(
-            messages=[
-                SystemMessage(content=system_message),
-                UserMessage(content=text),
-            ],
-            model="gpt-4o-mini",
-            temperature=1,
-            max_tokens=4096,
-            top_p=1
-        )
-    except HttpResponseError as e:
-        if e.status_code == 429:  # Rate limit error
-            print("Rate limit reached. Waiting for 45 seconds before retrying...")
-            time.sleep(45)
-            response = client.complete(
-                messages=[
-                    SystemMessage(content=system_message),
-                    UserMessage(content=text),
-                ],
-                model="gpt-4o-mini",
-                temperature=1,
-                max_tokens=4096,
-                top_p=1
-            )
-        else:
-            raise
+    # Payload for the request
+    payload = {
+        "messages": [
+            {
+            "role": "system",
+            "content": [
+                {
+                "type": "text",
+                "text": system_message
+                }
+            ]
+            },
+            {
+            "role": "user",
+            "content": [
+                {
+                "type": "text",
+                "text": text
+                }
+            ]
+            }
+        ],
+        "temperature": 1,
+        "top_p": 1,
+        "max_tokens": 4096
+    }
 
-    return response.choices[0].message.content
+    # Send request
+    try:
+        response = requests.post(AZURE_GPT4OMINI_ENDPOINT, headers=headers, json=payload)
+        response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
+    except requests.RequestException as e:
+        raise SystemExit(f"Failed to make the request. Error: {e}")
+
+    return response.json()['choices'][0]['message']['content']
