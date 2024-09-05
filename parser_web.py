@@ -4,19 +4,20 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 from datetime import datetime, timedelta
-from categorizer import categorize_changelog
+from ai_tools import categorize_changelog
 
 land = "DevEx"
 secure = "Security"
 accelerate = "AI"
 
 class Article:
-    def __init__(self, title, link, published, summary):
+    def __init__(self, title, link, published, category =None, summary=None):
         self.title = title
         self.link = link
         self.published = published
         self.summary = summary
-        self.category = None
+        self.category = category
+        self.imgs = []
 
     def to_markdown(self):
         return f"({self.published}) [{self.title}]({self.link})"

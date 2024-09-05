@@ -10,6 +10,8 @@ beautifulsoup4 = "*"
 argparse = "*"
 azure-ai-inference = "*"
 python-dotenv = "*"
+python-pptx = "*"
+pillow = "*"
 
 [dev-packages]
 

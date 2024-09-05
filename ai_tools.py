@@ -1,4 +1,6 @@
 import os
+import time
+from azure.core.exceptions import HttpResponseError
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage
 from azure.ai.inference.models import UserMessage
@@ -18,8 +20,6 @@ client = ChatCompletionsClient(
 def categorize_changelog(changelog, format="markdown"):
     system_message = '''Taking the following categories and subcategories:
                 DevEx
-                IAM/Permissions (subcategory within DevEx)
-                Actions (subcategory within DevEx)
                 Security
                 AI
             I'll give you one or several product changelog update items that you all have to classify into each of those categories. Never skip classifying an item. If you are not sure where the item should be classified, pick the best guess. Please take into account that "Copilot" and "Content Exclusion" is clearly AI and "Copilot Autofix" and "Secret scanning" is always security related. For each category, order the items by chronological descending order. My next prompt will contain the list you need to order.'''
@@ -38,5 +38,42 @@ def categorize_changelog(changelog, format="markdown"):
         max_tokens=4096,
         top_p=1
     )
+
+    return response.choices[0].message.content
+
+def summarize_text(text, limit, limit_type="characters"):
+    system_message = f'''Summarize any text I give you to {limit} {limit_type}. 
+    Try to capture the essence of the text in the most concise and impactful way. 
+    If needed, and to make sure you never go beyond the limit,
+    remove information that you consider less important or use widely understood acronyms.
+    Generally, a shorter summary is better than a more concise one.'''
+
+    try:
+        response = client.complete(
+            messages=[
+                SystemMessage(content=system_message),
+                UserMessage(content=text),
+            ],
+            model="gpt-4o-mini",
+            temperature=1,
+            max_tokens=4096,
+            top_p=1
+        )
+    except HttpResponseError as e:
+        if e.status_code == 429:  # Rate limit error
+            print("Rate limit reached. Waiting for 45 seconds before retrying...")
+            time.sleep(45)
+            response = client.complete(
+                messages=[
+                    SystemMessage(content=system_message),
+                    UserMessage(content=text),
+                ],
+                model="gpt-4o-mini",
+                temperature=1,
+                max_tokens=4096,
+                top_p=1
+            )
+        else:
+            raise
 
     return response.choices[0].message.content

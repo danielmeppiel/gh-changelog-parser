@@ -1,2 +1,4 @@
 changelog*
 .env
+*.pptx
+.DS_Store
