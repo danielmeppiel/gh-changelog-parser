@@ -1,13 +1,15 @@
 # GitHub Changelog Parser
 
-- [Overview](#overview)
-- [Why It Is Useful](#why-it-is-useful)
-- [How to Use](#how-to-use)
-  - [Prerequisites](#prerequisites)
-  - [Running the Script](#running-the-script)
-- [AI-powered Categorization](#ai-powered-categorization)
-  - [Prerequisites](#prerequisites-for-ai-categorization)
-  - [Running with AI Categorization](#running-with-ai-categorization)
+- [GitHub Changelog Parser](#github-changelog-parser)
+  - [Overview](#overview)
+  - [Why It Is Useful](#why-it-is-useful)
+  - [How to Use](#how-to-use)
+    - [Prerequisites](#prerequisites)
+    - [Running the Script](#running-the-script)
+      - [HTML (`changelog.html`)](#html-changeloghtml)
+  - [AI-powered Categorization](#ai-powered-categorization)
+    - [Prerequisites for AI Categorization](#prerequisites-for-ai-categorization)
+    - [Running with AI Categorization](#running-with-ai-categorization)
 
 
 ## Overview
@@ -38,17 +40,17 @@ This script is designed to fetch and parse the [GitHub Changelog](https://github
 ### Running the Script
 1. **Default Usage (Last 90 Days in Markdown)**
    ```sh
-   pipenv run python parser-web.py
+   pipenv run python parser_web.py
     ```
     This will fetch the changelog entries from the last 90 days and save the extracted information in Markdown format in a `changelog.md` file.
 2. **Custom Time Frame**  
    ```sh
-   pipenv run python parser-web.py --days 60
+   pipenv run python parser_web.py --days 60
     ```
     This will fetch and parse the changelog entries from the last 60 days and save them in a `changelog.md` file.
 3. **HTML Format**  
    ```sh
-   pipenv run python parser-web.py --format html
+   pipenv run python parser_web.py --format html
     ```
     This will fetch and parse the changelog entries from the last 90 days and save them in HTML format in a `changelog.html` file.
 
@@ -96,7 +98,7 @@ You can use AI to automatically categorize the changelog items per product area 
 This feature can be enabled by using the `-c` flag when running the script:
 
 ```sh
-pipenv run python parser-web.py -c
+pipenv run python parser_web.py -c
 ```
 
 It uses [GitHub Models](https://docs.github.com/en/github-models) to categorize the changelog items with GPT-4o. The output will look something like this:
@@ -105,8 +107,6 @@ It uses [GitHub Models](https://docs.github.com/en/github-models) to categorize 
 ## DevEx
 - (2024-08-29) [GitHub Enterprise Server 3.14 is generally available](https://github.blog/changelog/2024-08-29-github-enterprise-server-3-14-is-generally-available)
 - (2024-08-29) [What’s New in GitHub Sponsors](https://github.blog/changelog/2024-08-29-whats-new-in-github-sponsors)
-
-### IAM/Permissions
 - (2024-08-29) [Add repository permissions to custom organization roles](https://github.blog/changelog/2024-08-29-add-repository-permissions-to-custom-organization-roles)
 
 ## Security
@@ -119,4 +119,4 @@ It uses [GitHub Models](https://docs.github.com/en/github-models) to categorize 
 - (2024-08-27) [Custom models for GitHub Copilot are now in Limited Public Beta](https://github.blog/changelog/2024-08-27-custom-models-for-github-copilot-are-now-in-limited-public-beta)
 ```
 
-Please be aware that categorization is not perfect and may require manual intervention to correct mistakes of the AI. You can tweak the categories in the System Message at `categorizer.py:20`. 
+Please be aware that categorization is not perfect and may require manual intervention to correct mistakes of the AI. You can tweak the categories in the System Message at `ai_tools.py:20`. 
