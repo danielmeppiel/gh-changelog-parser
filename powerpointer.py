@@ -12,7 +12,7 @@ def parse_changelog(file_path):
     current_category = None
     with open(file_path, 'r') as file:
         for line in file:
-            category_match = re.match(r'## (.+)', line)
+            category_match = re.match(r'#+\s(.+)', line)
             if category_match:
                 current_category = category_match.group(1)
             else:
@@ -92,7 +92,7 @@ def add_article_slide(prs, article):
     content_placeholder = slide.placeholders[26]
 
     title_run = title_placeholder.text_frame.paragraphs[0].add_run()
-    if len(article.title.split()) > 12:
+    if len(article.title.split()) > 10:
         print("Summarizing title...")
         title_run.text = summarize_text(article.title, 10, "words")
     else:

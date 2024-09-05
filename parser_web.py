@@ -83,6 +83,7 @@ def write_articles_to_markdown(articles, do_categorize, output_file):
         markdown_content += f"- {article.to_markdown()}\n"
     if do_categorize:
         # Call the categorizer to categorize the changelog
+        print("Categorizing changelog, this could take a couple of minutes...")
         markdown_content = categorize_changelog(markdown_content, "markdown")
         # Strip the first and last lines to remove the raw markdown formatting
         markdown_lines = markdown_content.splitlines()[1:-1]
@@ -90,6 +91,7 @@ def write_articles_to_markdown(articles, do_categorize, output_file):
     # Write the markdown content to the file
     with open(output_file, 'w') as file:
         file.write(markdown_content)
+    print(f"Changelog written to {output_file}")
 
 def write_articles_to_html(articles, do_categorize, output_file):
     html_content = ""
@@ -106,6 +108,7 @@ def write_articles_to_html(articles, do_categorize, output_file):
     # Write the html content to the file
     with open(output_file, 'w') as file:
         file.write(html_content)
+    print(f"Changelog written to {output_file}")
 
 
 if __name__ == "__main__":
@@ -119,7 +122,9 @@ if __name__ == "__main__":
     changelog_url = "https://github.blog/changelog/"
     # Obtain the stop date as the specified number of days older than today
     stop_date = (datetime.now() - timedelta(days=args.days)).strftime('%Y-%m-%d')
+    print("Fetching changelog entries from {} to {}...".format(stop_date, datetime.now().strftime('%Y-%m-%d')))
     articles = fetch_and_parse_changelog(changelog_url, stop_date)
+    print("Fetched {} changelog entries.".format(len(articles)))
     
     current_path = os.path.dirname(os.path.abspath(__file__))
     output_file = os.path.join(current_path, "changelog." + args.format)

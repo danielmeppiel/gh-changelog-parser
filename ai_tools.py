@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 
 # Load environment variables from a .env file
@@ -65,8 +66,13 @@ def summarize_text(text, limit, limit_type="characters"):
     system_message = f'''Summarize any text I give you to {limit} {limit_type}. 
     Try to capture the essence of the text in the most concise and impactful way. 
     If needed, and to make sure you never go beyond the limit,
-    remove information that you consider less important or use widely understood acronyms.
-    Generally, a shorter summary is better than a more concise one.'''
+    remove information that you consider less important or use widely understood acronyms. 
+    Some useful acronyms are: GA for General Availability, PR for Pull Requests, Repo for Repository, 
+    GHAS for GitHub Advanced Security, GHE for GitHub Enterprise, GHEC for GitHub Enterprise Cloud,
+    JS for JavaScript, TS for TypeScript, Actions for GitHub Actions.
+    Generally, a shorter summary is better than a more concise one.
+    Do not finish the text with a dot.
+    Always choose shorter words that convey the same meaning.'''
 
     # Payload for the request
     payload = {
@@ -100,6 +106,11 @@ def summarize_text(text, limit, limit_type="characters"):
         response = requests.post(AZURE_GPT4OMINI_ENDPOINT, headers=headers, json=payload)
         response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
     except requests.RequestException as e:
-        raise SystemExit(f"Failed to make the request. Error: {e}")
+        if isinstance(e, requests.HTTPError) and e.response.status_code == 429:
+            print("Received 429 error. Retrying in 60 seconds...")
+            time.sleep(60)
+            return summarize_text(text, limit, limit_type)
+        else:
+            raise SystemExit(f"Failed to make the request. Error: {e}")
 
     return response.json()['choices'][0]['message']['content']
